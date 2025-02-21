@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kualitas Udara Kota Sidoarjo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #ffffff;
+            padding: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            padding: 14px 40px;
+            /* Increased padding for more spacing */
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            /* Default font size */
+            color: #007bff;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 20px;
+            /* Default gap between links */
+        }
+
+        .navbar a:hover {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 100px auto 20px;
+            padding: 40px;
+            background: #ffffff;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .menu {
+            display: none;
+            padding: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .navbar a {
+                font-size: 20px;
+                /* Decrease font size on medium screens */
+                margin: 0 15px;
+                /* Decrease gap between links */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar a {
+                font-size: 18px;
+                /* Decrease font size on smaller screens */
+                margin: 0 10px;
+                /* Decrease gap between links */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar a {
+                font-size: 16px;
+                /* Further decrease font size on very small screens */
+                margin: 0 8px;
+                /* Further decrease gap between links */
+            }
+        }
+
+
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #eef2f3;
+            color: #333;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .header {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to left, rgba(255, 196, 0, 0.5), rgba(255, 196, 0, 0) 80%);
+            padding: 18px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 10px
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to left, rgba(255, 196, 0, 0.5), rgba(255, 196, 0, 0) 80%);
+            filter: blur(10px);
+            z-index: -1;
+            /* Keeps the background behind the content */
+        }
+
+
+
+
+
+        .statusred {
+            background: #FF9B57;
+            padding: 24px;
+            border-radius: 12px 12px 12px 12px;
+            text-align: left;
+            width: fit-content;
+            color: #333;
+            font-family: Arial, sans-serif;
+            display: inline-block;
+            s
+        }
+
+
+        .status {
+            background: #FFD54F;
+            padding: 24px;
+            border-radius: 12px 12px 12px 12px;
+            text-align: left;
+            width: fit-content;
+            color: #333;
+            font-family: Arial, sans-serif;
+            display: inline-block;
+            s
+        }
+
+
+
+        .status h3 {
+            display: flex;
+            align-items: center;
+            /* Menyelaraskan teks dan ikon secara vertikal */
+            font-size: 20px;
+            /* Ukuran font untuk teks */
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .face-icon {
+            width: 50px;
+            /* Ukuran ikon yang lebih besar */
+            height: 50px;
+            margin-left: 10px;
+            /* Jarak antara teks dan ikon */
+        }
+
+
+        .status p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .status-footer {
+            background: white;
+            padding: 15px;
+            border-radius: 12px 12px 12px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+
+        }
+
+        .status-badge {
+
+            padding: 24px 48px;
+            border-radius: 16px;
+            display: inline-block;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #search {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            /* Menambahkan jarak antara search dan header */
+        }
+
+        #search:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+            transform: scale(1.02);
+        }
+
+        <style>
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="#" onclick="openMenu(event, 'home')">Home</a>
+        <a href="#" onclick="openMenu(event, 'about')">About</a>
+        <a href="#" onclick="openMenu(event, 'menu')">Services</a>
+        <a href="#" onclick="openMenu(event, 'where')">Contact</a>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="container">
+
+        <input type="text" id="search" placeholder="Cari kota..." onkeyup="searchCity()">
+        <div id="home" class="menu active">
+            <div class="header" style="background: linear-gradient(to left, rgba(255, 155, 87, 0.5), rgba(255, 155, 87, 0) 80%);">
+                <p class="status-badge">Kualitas udara di Kota Tegal</p>
+                <div class="status" style="background: #FF9B57; color: #fff;">
+                    <h3>106 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Relatif cukup sehat</p>
+                    <p>Polutan utama: PM2.5 (43 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>☁️ 26°</span>
+                        <span>💨 3.3 km/h</span>
+                        <span>💧 77%</span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="header" style="background: linear-gradient(to left, rgba(255, 155, 87, 0.5), rgba(255, 155, 87, 0) 80%);">
+                <p class="status-badge">Kualitas udara di Kota Jakarta</p>
+                <div class="status" style="background: #FF9B57; color: #fff;">
+
+                    <h3>117 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Sedang</p>
+                    <p>Polutan utama: PM2.5 (50 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>☁️ 26°</span>
+                        <span>💨 7.4 km/h</span>
+                        <span>💧 78%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header">
+                <p class="status-badge">Kualitas udara di Pulau Pamekasan</p>
+                <div class="status">
+                    <h3>71 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Baik</p>
+                    <p>Polutan utama: PM2.5 (30 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>☁️ 26°</span>
+                        <span>💨 3.7 km/h</span>
+                        <span>💧 81%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header">
+                <p class="status-badge">Kualitas udara di Kota Sidoarjo</p>
+                <div class="status">
+                    <h3>93 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Sedang</p>
+                    <p>Polutan utama: PM2.5 (40 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>⛈️ 28°</span>
+                        <span>💨 7,3 km/h</span>
+                        <span>💧 80%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header" style="background: linear-gradient(to left, rgba(255, 155, 87, 0.5), rgba(255, 155, 87, 0) 80%);">
+                <p class="status-badge">Kualitas udara di Kota Surabaya</p>
+                <div class="status" style="background: #FF9B57; color: #fff;">
+                    <h3>111 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Sedang</p>
+                    <p>Polutan utama: PM2.5 (45 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>🌤️ 31°</span>
+                        <span>💨 15 km/h</span>
+                        <span>💧 60%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header">
+                <p class="status-badge">Kualitas udara di Kota Yogyakarta</p>
+                <div class="status">
+                    <h3>75 AQI
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#333" class="face-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9.75h.008v.008h-.008V9.75zm-7.5 0h.008v.008h-.008V9.75zM12 17.25a4.5 4.5 0 004.5-4.5h-9a4.5 4.5 0 004.5 4.5zM12 3.75a8.25 8.25 0 00-8.25 8.25 8.25 8.25 0 1016.5 0 8.25 8.25 0 00-8.25-8.25z" />
+                        </svg>
+                    </h3>
+                    <p>Sedang</p>
+                    <p>Polutan utama: PM2.5 (38 µg/m³)</p>
+                    <div class="status-footer">
+                        <span>⛅ 29°</span>
+                        <span>💨 10 km/h</span>
+                        <span>💧 65%</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+            <script>
+                function openMenu(evt, menuName) {
+                    var i, sections;
+                    sections = document.getElementsByClassName("menu");
+                    for (i = 0; i < sections.length; i++) {
+                        sections[i].classList.remove("active");
+                    }
+                    document.getElementById(menuName).classList.add("active");
+                }
+
+                function searchCity() {
+                    let input = document.getElementById('search').value.toLowerCase();
+                    let headers = document.getElementsByClassName('header');
+
+                    for (let i = 0; i < headers.length; i++) {
+                        let city = headers[i].querySelector('.status-badge').textContent.toLowerCase();
+                        if (city.includes(input)) {
+                            headers[i].style.display = "block";
+                        } else {
+                            headers[i].style.display = "none";
+                        }
+                    }
+                }
+            </script>
+
+</body>
+
+</html>
